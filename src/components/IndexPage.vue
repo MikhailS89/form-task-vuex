@@ -78,6 +78,7 @@ export default {
 
         this.timeoutID = setTimeout(() => {
 
+          // выводит последовательность изменения инпутов пользователем, до 3х посл. изменений ['price', 'price', 'amount']
           // this.inputHistory.push({ [key]: value })
           // if (this.inputHistory.length > 3) {
           //   this.inputHistory.shift()
