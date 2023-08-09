@@ -134,12 +134,6 @@ export default {
 
         this.extractLocalStorageParams()
         this.setHistory({ response, storage: JSON.parse(this.getLocalStorageParams) })
-
-        console.group('send: ')
-        console.log('success: ', response.success)
-        console.log('getLocalStorageParams: ', this.getLocalStorageParams)
-        console.log('history: ', this.history)
-        console.groupEnd()
       }
     },
     mounted () {
