@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <input id="price" type="text" v-model="price" @input="(e) => setParams('price', e.target.value)" placeholder="цена">
-    <input id="quantity" type="text" v-model="quantity" @input="(e) => setParams('quantity', e.target.value)" placeholder="кол-во">
-    <input id="amount" type="text" v-model="amount" @input="(e) => setParams('amount', e.target.value)" placeholder="сумма">
+    <input id="price" type="text" :value="getPrice" @input="(e) => setParams('price', e.target.value)" placeholder="цена">
+    <input id="quantity" type="text" :value="getQuantity" @input="(e) => setParams('quantity', e.target.value)" placeholder="кол-во">
+    <input id="amount" type="text" :value="getAmount" @input="(e) => setParams('amount', e.target.value)" placeholder="сумма">
     <button type="click" @click.prevent="send">Отправить</button>
 
     <br>
@@ -15,7 +15,7 @@
     <hr>
 
     <div class="list">
-      <div v-for="(item, index) of history" :key="index">
+      <div v-for="(item, index) of getHistory" :key="index">
         <br>
         {{ JSON.stringify(item) }}
       </div>
@@ -24,8 +24,6 @@
 </template>
 
 <script>
-// import store from '../store'
-
 export default {
     name: 'IndexPage',
     props: {
@@ -39,36 +37,37 @@ export default {
         nonce: 0,
         localStorageParams: {},
         history: [],
+        // inputHistory: [],
         timeoutID: null,
         timeWait: 300
       }
     },
     computed: {
       getPrice () {
-        return this.price
+        return this.$store.state.price
       },
       getQuantity () {
-        return this.quantity
+        return this.$store.state.quantity
       },
       getAmount () {
-        return /*this.price * this.quantity*/this.amount
+        return this.$store.state.amount
       },
       getNonce () {
-        return this.nonce
+        return this.$store.state.nonce
       },
       getParams () {
         return {
           price: this.getPrice,
           quantity: this.getQuantity,
           amount: this.getAmount,
-          nonce: this.getNonce
+          nonce: this.nonce
         }
       },
       getLocalStorageParams () {
-        return JSON.stringify(this.localStorageParams)
+        return JSON.stringify(this.$store.state.localStorageParams)
       },
       getHistory () {
-        return this.history
+        return this.$store.state.history
       }
     },
     methods: {
@@ -78,38 +77,20 @@ export default {
         }
 
         this.timeoutID = setTimeout(() => {
+
+          // this.inputHistory.push({ [key]: value })
+          // if (this.inputHistory.length > 3) {
+          //   this.inputHistory.shift()
+          // }
+          // this.setHistory({ inputs: this.inputHistory })
+
           this.setHistory({ [key]: value })
-          this[key] = value
-
-          if (!+this.price && +this.quantity && +this.amount) {
-            this.price = +this.amount / +this.quantity
-          } else if (+this.price && !+this.quantity && +this.amount) {
-            this.quantity = +this.amount / +this.price
-          } else if (+this.price && +this.quantity && !+this.amount) {
-            this.amount = +this.quantity * +this.price
-          } else if (+this.price && +this.quantity && +this.amount) {
-            if (key === 'amount') {
-              this.price = +this.amount / +this.quantity
-            }
-            if (key === 'price') {
-              this.amount = +this.quantity * +this.price
-            }
-            if (key === 'quantity') {
-              this.amount = +this.quantity * +this.price
-            }
-          }
-
+          this.$store.commit('updateInputParams', { key, value })
 
         }, this.timeWait)
       },
       extractLocalStorageParams () {
-        const obj = {
-          price: localStorage.getItem('price') || 0,
-          quantity: localStorage.getItem('quantity') || 0,
-          amount: localStorage.getItem('amount') || 0,
-          nonce: localStorage.getItem('nonce') || 0
-        }
-        this.localStorageParams = obj
+        this.$store.commit('extractLocalStorageParams')
       },
       setlocalStorageParams (key, value) {
         localStorage.setItem(key, value)
@@ -129,15 +110,10 @@ export default {
         return Math.floor(Math.random() * (max - min + 1)) + min;
       },
       reqFormParams () {
-        return new Promise((resolve) => {
-          const status = this.getRandomInt(2)
-          const wait = 1000
-          const success = { success: status === 1 }
-          setTimeout(() => resolve(success), wait)
-        });
+        return this.$store.dispatch('reqFormParams')
       },
       setHistory (record) {
-        this.history.unshift(record)
+        this.$store.commit('updateHistory', record)
       },
       async send () {
         if (this.getAmount % 2 !== 0) { return }
@@ -168,17 +144,10 @@ export default {
     },
     mounted () {
       this.clearlocalStorageParams()
-
-      console.group('mounted: IndexPage')
-      console.log('this.$store: ', this.$store)
-      console.log('this.store: ', this.store)
-      console.log('this: ', this)
-      console.groupEnd()
     }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   label {
       margin: 0 30px 0 30px;
