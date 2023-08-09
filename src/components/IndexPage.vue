@@ -76,24 +76,26 @@ export default {
 
         this.timeoutID = setTimeout(() => {
           this.setHistory({ [key]: value })
-
           this[key] = value
 
-          if (key === 'price') {
-            this.amount = +this.price * +this.quantity
-          } else if (key === 'quantity') {
-            if (!+this.price && +this.quantity && +this.amount) {
+          if (!+this.price && +this.quantity && +this.amount) {
+            this.price = +this.amount / +this.quantity
+          } else if (+this.price && !+this.quantity && +this.amount) {
+            this.quantity = +this.amount / +this.price
+          } else if (+this.price && +this.quantity && !+this.amount) {
+            this.amount = +this.quantity * +this.price
+          } else if (+this.price && +this.quantity && +this.amount) {
+            if (key === 'amount') {
               this.price = +this.amount / +this.quantity
             }
-            if (+this.price && +this.quantity && !+this.amount) {
-              this.amount = +this.price * +this.quantity
+            if (key === 'price') {
+              this.amount = +this.quantity * +this.price
             }
-            if (+this.price && !+this.quantity && +this.amount) {
-              this.amount = +this.price * +this.quantity
+            if (key === 'quantity') {
+              this.amount = +this.quantity * +this.price
             }
-          } else if (key === 'amount' && +this.quantity) {
-            this.price = +this.amount / +this.quantity
           }
+
 
         }, this.timeWait)
       },
