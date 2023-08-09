@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import store from '../store'
+// import store from '../store'
 
 export default {
     name: 'IndexPage',
@@ -170,6 +170,8 @@ export default {
       this.clearlocalStorageParams()
 
       console.group('mounted: IndexPage')
+      console.log('this.$store: ', this.$store)
+      console.log('this.store: ', this.store)
       console.log('this: ', this)
       console.groupEnd()
     }
