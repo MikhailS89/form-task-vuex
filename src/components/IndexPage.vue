@@ -12,8 +12,9 @@
     <label for="amount">{{ `Сумма: ${getAmount}` }}</label>
     <label for="">{{ `localStorage : ${getLocalStorageParams}` }}</label>
 
+    <hr>
+
     <div class="list">
-      <!-- в свободной форме отображать информацию о каждом событии -->
       <div v-for="(item, index) of history" :key="index">
         <br>
         {{ JSON.stringify(item) }}
@@ -23,6 +24,8 @@
 </template>
 
 <script>
+import store from '../store'
+
 export default {
     name: 'IndexPage',
     props: {
@@ -165,7 +168,10 @@ export default {
     },
     mounted () {
       this.clearlocalStorageParams()
-      console.log('mounted: IndexPage')
+
+      console.group('mounted: IndexPage')
+      console.log('this: ', this)
+      console.groupEnd()
     }
 }
 </script>
@@ -173,6 +179,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   label {
-      margin: 0 60px 0 60px;
+      margin: 0 30px 0 30px;
   }
 </style>
